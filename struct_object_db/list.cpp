@@ -6,19 +6,26 @@ using namespace std;
 
 struct Node
 {
-	double x;
-	Node *next;
-	Node *prev;
+    double x = 0.0;
+    Node *next = nullptr;
+    Node *prev = nullptr;
 };
+
+List::List()
+{
+    m_head = m_tail = new Node;
+}
 
 List::~List()
 {
-	while(m_head)
-	{
-		m_tail = m_head->next;
-		delete m_head;
-		m_head = m_tail;
+    while(m_head != m_tail)
+    {
+        auto temp = m_head->next;
+        temp->prev = nullptr;
+        delete m_head;
+        m_head = temp;
 	}
+    delete m_tail;
 }
 
 void List::add(double x)
@@ -27,102 +34,217 @@ void List::add(double x)
 	temp->next = nullptr;
 	temp->x = x;
 	
-	if (m_head)
+    if (m_head != m_tail)
 	{
-		temp->prev = m_tail;
-		m_tail->next = temp;
-		m_tail = temp;
+        auto prev = m_tail->prev;
+        prev->next = temp;
+        m_tail->prev = temp;
+        temp->prev = prev;
+        temp->next = m_tail;
 	}
 	else
 	{
-		temp->prev = nullptr;
-		m_head = m_tail = temp;
+        m_head = temp;
+        m_head->next = m_tail;
+        m_tail->prev = m_head;
 	}
 }
 
 void List::del(int index)
 {
-	Node *m_temp = m_head;
-	Node *m_temp_next;
-	Node *m_temp_prev;
+    Node *temp = m_head;
 	int counter=0;
-	while(m_temp)
+    while(temp != m_tail)
 	{
-		if(counter == index)
-		{
-			m_temp_next = m_temp->next;
-			m_temp_prev = m_temp->prev;
+        if (counter == index)
+        {
+            Node *next = temp->next;
+            Node *prev = temp->prev;
+
+            if (prev)
+            {
+                prev->next = next;
+                next->prev = prev;
+            }
+            else
+            {
+                m_head = next;
+                m_head->prev = nullptr;
+            }
 			
-			m_temp_next->prev = m_temp_prev;
-			m_temp_prev->next = m_temp_next;
-			
-			delete m_temp;
+            delete temp;
+            return;
 		}
-		m_temp = m_temp->next;
+        temp = temp->next;
 		counter++;
 	}
 }
 
-int List::quantity()
+int List::quantity() const
 {
-	Node *m_temp = m_head;
+    Node *temp = m_head;
 	int counter=0;
-	while (m_temp)  
+    while (temp != m_tail)
 	{
 		counter++;
-		m_temp = m_temp->next;             
-	} 
-	return counter; 
+        temp = temp->next;
+    }
+    return counter;
 }
 
-int List::getValue(int index)
+double &List::operator[](int index)
 {
-	Node *m_temp = m_tail;
+    Node *temp = m_head;
+    int counter=0;
+    while (temp != m_tail)
+    {
+        if(counter == index)
+        {
+            return temp->x;
+        }
+        counter++;
+        temp = temp->next;
+    }
+    return temp->x;
+}
+
+double List::getValue(int index) const
+{
+    Node *temp = m_head;
 	int counter=0;
-	while (m_temp)  
+    while (temp != m_tail)
 	{
 		if(index == counter)
-		{
-			return m_temp->x;  
+        {
+            return temp->x;
 		}
 		counter++;
-		m_temp = m_temp->prev;             
+        temp = temp->next;
 	} 
 	return 0;
 }
 
 void List::setValue(int index, double value)
 {
-	Node *m_temp = m_tail;
+    Node *temp = m_head;
 	int counter=0;
-	while (m_temp)  
+    while (temp != m_tail)
 	{
 		if(index == counter)
 		{
-		  m_temp->x = value;
+          temp->x = value;
 		  break;
 		}
 		counter++;
-		m_temp = m_temp->prev;             
+        temp = temp->next;
 	} 
 }
 
 void List::show()
 {
-     Node *m_temp = m_tail;
-	while (m_temp)              
+     Node *temp = m_head;
+    while (temp != m_tail)
 	{
-		cout << m_temp->x << " ";       
-		m_temp = m_temp->prev;            
+        cout << temp->x << " ";
+        temp = temp->next;
 	}
 	cout << "\n";
  
-	m_temp = m_head;
-	while (m_temp)  
-	{
-		cout << m_temp->x << " ";  
-		m_temp = m_temp->next;             
+    temp = m_tail;
+    while (temp != m_head)
+    {
+        temp = temp->prev;
+        cout << temp->x << " ";
 	}
      cout << "\n";
-	 
+
+}
+
+
+ListIterator::ListIterator() : m_node(nullptr)
+{
+}
+
+ListIterator::ListIterator(const ListIterator &other) : m_node(other.m_node)
+{
+}
+
+ListIterator::ListIterator(ListIterator &&other) noexcept : m_node(std::move(other.m_node))
+{
+}
+
+ListIterator &ListIterator::operator++()
+{
+    m_node = m_node->next;
+    return *this;
+}
+
+ListIterator ListIterator::operator++(int)
+{
+    ListIterator temp(*this);
+    ++(*this);
+    return temp;
+}
+
+ListIterator &ListIterator::operator--()
+{
+    m_node = m_node->prev;
+    return *this;
+}
+
+ListIterator ListIterator::operator--(int)
+{
+    ListIterator temp(*this);
+    --(*this);
+    return temp;
+}
+
+double ListIterator::operator*() const
+{
+    return m_node->x;
+}
+
+bool ListIterator::operator==(const ListIterator &other) const
+{
+    return m_node == other.m_node;
+}
+
+bool ListIterator::operator!=(const ListIterator &other) const
+{
+    return m_node != other.m_node;
+}
+
+ListIterator &ListIterator::operator=(const ListIterator &other)
+{
+    m_node = other.m_node;
+    return *this;
+}
+
+ListIterator ListIterator::operator()() const
+{
+    return ListIterator(*this);
+}
+
+ListIterator::ListIterator(Node *node) : m_node(node)
+{
+}
+
+ListIterator List::begin()
+{
+    return ListIterator(m_head);
+}
+
+ListIterator List::begin() const
+{
+    return ListIterator(m_head);
+}
+
+ListIterator List::end()
+{
+    return ListIterator(m_tail);
+}
+
+ListIterator List::end() const
+{
+    return ListIterator(m_tail);
 }
