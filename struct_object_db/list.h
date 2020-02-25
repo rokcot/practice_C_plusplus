@@ -10,10 +10,10 @@ public:
     ListIterator();
     ListIterator(const ListIterator& other);
     explicit ListIterator(ListIterator&& other) noexcept;
-	
-	ListIterator& operator++();
+
+    ListIterator& operator++();
     ListIterator operator++(int);
-	ListIterator& operator--();
+    ListIterator& operator--();
     ListIterator operator--(int);
 
 	double operator*() const;
