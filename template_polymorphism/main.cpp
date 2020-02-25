@@ -1,14 +1,26 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <list>
 
 using namespace std;
+
+void clearScreen()
+{
+#ifdef _WIN32
+    std::system("cls");
+#else
+    std::system("clear");
+#endif // _WIN32
+}
 
 
 class Shape
 {
 public:
+    virtual ~Shape() = default;
     virtual double area() const = 0;
+    virtual string getNumber() const = 0;
     string getName() const
     {
         return m_name;
@@ -38,8 +50,12 @@ public:
     {
         return M_PI * m_radius * m_radius;
     }
+    string getNumber() const override
+    {
+        return "R="+to_string(m_radius);
+    }
 private:
-    int m_radius;
+    double m_radius;
 };
 class Triangle : public Shape
 {
@@ -52,6 +68,10 @@ public:
         double s = (m_A + m_B + m_C) / 2;
         double p = pow(s*(s - m_A)*(s - m_B)*(s - m_C), 0.5);
         return p;
+    }
+    string getNumber() const override
+    {
+        return "A="+to_string(m_A)+" B="+to_string(m_B)+" C="+to_string(m_C);
     }
 private:
     double m_A = 0;
@@ -67,6 +87,10 @@ public:
     double area() const override
     {
         return m_height * m_width;
+    }
+    string getNumber() const override
+    {
+        return "height="+to_string(m_height)+" m_width="+to_string(m_width);
     }
 
 private:
@@ -85,7 +109,7 @@ Shape* createCircle(double radius)
 
 Shape* createTriangle(double a, double b, double c)
 {
-    if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a > b + c))
+    if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
     {
         return Shape::create<Triangle>(a, b, c);
     }
@@ -109,8 +133,8 @@ Shape* createShape(int type)
     {
     case 1:
     {
-        system("cls");
-        cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ Ñ€Ğ°Ğ´Ğ¸ÑƒÑ:" << endl;
+        clearScreen();
+        cout << "Ââåäèòå ğàäèóñ:" << endl;
         cin >> input;
         return createCircle(input);
     }
@@ -118,8 +142,8 @@ Shape* createShape(int type)
     {
         for (int i = 1; i <= 3; ++i)
         {
-            system("cls");
-            cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ Ğ´Ğ»Ğ¸Ğ½Ñƒ ÑÑ‚Ğ¾Ñ€Ğ¾Ğ½Ñ‹ " << i << ":" << endl;
+            clearScreen();
+            cout << "Ââåäèòå äëèíó ñòîğîíû " << i << ":" << endl;
             cin >> input;
             t[i - 1] = input;
         }
@@ -127,11 +151,11 @@ Shape* createShape(int type)
     }
     case 3:
     {
-        system("cls");
-        cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ ÑˆĞ¸Ñ€Ğ¸Ğ½Ñƒ:" << endl;
+        clearScreen();
+        cout << "Ââåäèòå øèğèíó:" << endl;
         cin >> input;
         t[0] = input;
-        cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ Ğ´Ğ»Ğ¸Ğ½Ñƒ:" << endl;
+        cout << "Ââåäèòå äëèíó:" << endl;
         cin >> input;
         t[1] = input;
         return createRectangle(t[0], t[1]);
@@ -141,6 +165,46 @@ Shape* createShape(int type)
         break;
     }
     return nullptr;
+}
+
+bool selectList(int type, list<Shape*>& figure_list)
+{
+    switch (type)
+    {
+    case 4:
+    {
+        clearScreen();
+        int step=0;
+        for (auto iter = figure_list.begin(); iter != figure_list.end(); iter++)
+        {
+            step++;
+            std::cout<<"Ôèãóğà "<<step << " "<<(*iter)->getName()<<" ("<<(*iter)->getNumber()<<": "
+                    << ") - " <<"Ïëîùàäü = "<< (*iter)->area() << "\n";
+        }
+        return true;
+    }
+    case 5:
+    {
+        int index=0;
+        cout << "Ââåäèòå ıëåìåíò äëÿ óäàëåíèÿ(İëåìåíòîâ "<<figure_list.size()<<"):" << endl;
+        cin>>index;
+        auto iter = figure_list.begin();
+        std::advance(iter, index);
+        if (iter != figure_list.end())
+        {
+            auto item = *iter;
+            figure_list.erase(iter);
+            cout<<"delete"<<endl;
+            delete item;
+            return true;
+        }
+        return false;
+    }
+
+    default:
+        break;
+    }
+    return false;
 }
 
 template <typename T>
@@ -153,28 +217,43 @@ int main()
 {
     setlocale(0, "");
     int select = 0;
+    list<Shape*> figure_list;
 
     while (true) {
-        system("cls");
+        clearScreen();
         std::cout
-            << "ĞšĞ°ĞºĞ¾Ğ¹ Ğ¾Ğ±ÑŠĞµĞºÑ‚ ÑĞ¾Ğ·Ğ´Ğ°Ñ‚ÑŒ?:" << endl
-            << "ĞšÑ€ÑƒĞ³: 1" << endl
-            << "Ğ¢Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸Ğº: 2" << endl
-            << "ĞŸÑ€ÑĞ¼Ğ¾ÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸Ğº: 3" << endl
-            << "Ğ’Ñ‹Ñ…Ğ¾Ğ´: 4" << endl;
+            << "×òî âûïîëíèòü?:" << endl
+            << "Ñîçäàòü Êğóã: 1" << endl
+            << "Ñîçäàòü Òğåóãîëüíèê: 2" << endl
+            << "Ñîçäàòü Ïğÿìîóãîëüíèê: 3" << endl
+            << "Âûâåñòè âñå ôèãóğû: 4" << endl
+            << "Óäàëèòü ôèãóğó: 5" << endl
+            << "Âûõîä: 6" << endl;
         cin >> select;
-        if (select < 1 || select > 3)
+        if (select < 1 || select > 6)
         {
             break;
         }
-        Shape* shape = createShape(select);
-        if (shape)
+        if (select < 1 || select > 3)
         {
-            std::cout << "ĞŸĞ»Ğ¾Ñ‰Ğ°Ğ´ÑŒ:" << shape->area() << std::endl;
+           if (!selectList(select,figure_list))
+           {
+               cout<<"Error"<<endl;
+           }
         }
         else
         {
-            std::cout << "ĞĞµ ÑƒĞ´Ğ°Ğ»Ğ¾ÑÑŒ ÑĞ¾Ğ·Ğ´Ğ°Ñ‚ÑŒ Ñ„Ğ¸Ğ³ÑƒÑ€Ñƒ" << std::endl;
+            Shape* shape = createShape(select);
+
+            if (shape)
+            {
+                figure_list.push_back(shape);
+                std::cout << "Ñîçäàíà íîâàÿ ôèãóğà! ïëîùàäü êîòîğîãî:" << shape->area() << std::endl;
+            }
+            else
+            {
+                std::cout << "Íå óäàëîñü ñîçäàòü ôèãóğó" << std::endl;
+            }
         }
         system("pause");
     }
