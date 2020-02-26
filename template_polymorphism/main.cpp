@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <list>
+#include <vector>
+#include <memory>
+#include <ctime>
 
 using namespace std;
 
@@ -14,11 +16,16 @@ void clearScreen()
 #endif // _WIN32
 }
 
+class Shape;
+typedef std::shared_ptr<Shape> ShapePtr;
 
 class Shape
 {
 public:
-    virtual ~Shape() = default;
+    virtual ~Shape()
+    {
+        cout<<"Delete"<<endl;
+    };
     virtual double area() const = 0;
     virtual string getNumber() const = 0;
     string getName() const
@@ -27,9 +34,9 @@ public:
     }
 
     template <typename T, typename ...Params>
-    static Shape* create(Params... params)
+    static ShapePtr create(Params... params)
     {
-        return new T(params...);
+        return std::make_shared<T>(params...);
     }
 
 protected:
@@ -40,6 +47,7 @@ protected:
 private:
     string m_name = "figure";
 };
+
 class Circle : public Shape
 {
 public:
@@ -98,7 +106,7 @@ private:
     double m_width;
 };
 
-Shape* createCircle(double radius)
+ShapePtr createCircle(double radius)
 {
     if (radius > 0.0)
     {
@@ -107,7 +115,7 @@ Shape* createCircle(double radius)
     return nullptr;
 }
 
-Shape* createTriangle(double a, double b, double c)
+ShapePtr createTriangle(double a, double b, double c)
 {
     if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
     {
@@ -116,7 +124,7 @@ Shape* createTriangle(double a, double b, double c)
     return nullptr;
 }
 
-Shape* createRectangle(double width, double height)
+ShapePtr createRectangle(double width, double height)
 {
     if (width > 0.0 && height > 0.0)
     {
@@ -125,7 +133,7 @@ Shape* createRectangle(double width, double height)
     return nullptr;
 }
 
-Shape* createShape(int type)
+ShapePtr createShape(int type,bool process)
 {
     double input = 0;
     double t[3];
@@ -133,32 +141,58 @@ Shape* createShape(int type)
     {
     case 1:
     {
-        clearScreen();
-        cout << "Введите радиус:" << endl;
-        cin >> input;
-        return createCircle(input);
+        if(!process){
+            clearScreen();
+            cout << "Введите радиус:" << endl;
+            cin >> input;
+            return createCircle(input);
+        }
+        else
+        {
+            int rnd =  rand() % 10 +1;
+            return createCircle(rnd);
+        }
     }
     case 2:
     {
-        for (int i = 1; i <= 3; ++i)
+        if(!process)
         {
-            clearScreen();
-            cout << "Введите длину стороны " << i << ":" << endl;
-            cin >> input;
-            t[i - 1] = input;
+            for (int i = 1; i <= 3; ++i)
+            {
+                clearScreen();
+                cout << "Введите длину стороны " << i << ":" << endl;
+                cin >> input;
+                t[i - 1] = input;
+            }
+            return createTriangle(t[0], t[1], t[2]);
         }
-        return createTriangle(t[0], t[1], t[2]);
+        else
+        {
+            int A = rand() % 10 +1;
+            int B = rand() % (A+3) + A;
+            int C = rand() % (B+3) + B;
+            return createTriangle(A, B, C);
+        }
     }
     case 3:
     {
-        clearScreen();
-        cout << "Введите ширину:" << endl;
-        cin >> input;
-        t[0] = input;
-        cout << "Введите длину:" << endl;
-        cin >> input;
-        t[1] = input;
-        return createRectangle(t[0], t[1]);
+        if(!process)
+        {
+            clearScreen();
+            cout << "Введите ширину:" << endl;
+            cin >> input;
+            t[0] = input;
+            cout << "Введите длину:" << endl;
+            cin >> input;
+            t[1] = input;
+            return createRectangle(t[0], t[1]);
+        }
+        else
+        {
+            int height = rand() % 10 +1;
+            int width = rand() % 10 +1;
+            return createRectangle(height, width);
+        }
     }
 
     default:
@@ -167,7 +201,7 @@ Shape* createShape(int type)
     return nullptr;
 }
 
-bool selectList(int type, list<Shape*>& figure_list)
+bool selectList(int type, vector<ShapePtr>& figure_list)
 {
     switch (type)
     {
@@ -195,12 +229,47 @@ bool selectList(int type, list<Shape*>& figure_list)
             auto item = *iter;
             figure_list.erase(iter);
             cout<<"delete"<<endl;
-            delete item;
             return true;
         }
         return false;
     }
+    case 6:
+    {
 
+        for(int i=0;i<100;i++)
+        {
+            int rnd =  rand() % 3 +1;
+            auto shape = createShape(rnd, true);
+            figure_list.push_back(shape);
+        }
+        return false;
+    }
+    case 7:
+    {
+        if(50<figure_list.size())
+        {
+            int i = 50;
+            auto iter = figure_list.end();
+            while (i-- > 0)
+            {
+                std::advance(iter, 0);
+                figure_list.erase(iter);
+                iter = figure_list.end();
+            }
+            /*for(int i =0; i<50;i++)
+            {
+                auto iter = figure_list.begin();
+                std::advance(iter, i);
+                if (iter != figure_list.end())
+                {
+                    auto item = *iter;
+                    figure_list.erase(iter);
+                }
+            }*/
+            return true;
+        }
+        return false;
+    }
     default:
         break;
     }
@@ -215,9 +284,10 @@ double getArea(const T& shape)
 
 int main()
 {
+    srand(time(0));
     setlocale(0, "");
     int select = 0;
-    list<Shape*> figure_list;
+    vector<ShapePtr> figure_list;
 
     while (true) {
         clearScreen();
@@ -228,9 +298,11 @@ int main()
             << "Создать Прямоугольник: 3" << endl
             << "Вывести все фигуры: 4" << endl
             << "Удалить фигуру: 5" << endl
-            << "Выход: 6" << endl;
+            << "Создать 100 уникальных фигур: 6" << endl
+            << "Удалить 50 случайных фигур: 7" << endl
+            << "Выход: 8" << endl;
         cin >> select;
-        if (select < 1 || select > 6)
+        if (select < 1 || select > 8)
         {
             break;
         }
@@ -243,12 +315,13 @@ int main()
         }
         else
         {
-            Shape* shape = createShape(select);
+            auto shape = createShape(select,false);
 
             if (shape)
             {
                 figure_list.push_back(shape);
-                std::cout << "Создана новая фигура! площадь которого:" << shape->area() << std::endl;
+                std::cout << "Создана новая фигура! площадь которого:"
+                          << shape->area() << std::endl;
             }
             else
             {
