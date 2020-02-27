@@ -16,13 +16,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    createcircledialog.cpp \
+    createrectangledialog.cpp \
+    createtriangledialog.cpp \
     main.cpp \
     maindialog.cpp
 
 HEADERS += \
+    createcircledialog.h \
+    createrectangledialog.h \
+    createtriangledialog.h \
     maindialog.h
 
 FORMS += \
+    createcircledialog.ui \
+    createrectangledialog.ui \
+    createtriangledialog.ui \
     maindialog.ui
 
 TRANSLATIONS += \
