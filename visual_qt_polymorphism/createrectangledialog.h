@@ -1,19 +1,21 @@
 #ifndef CREATERECTANGLEDIALOG_H
 #define CREATERECTANGLEDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class CreateRectangleDialog;
 }
 
-class CreateRectangleDialog : public QWidget
+class CreateRectangleDialog : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit CreateRectangleDialog(QWidget *parent = nullptr);
-    ~CreateRectangleDialog();
+    ~CreateRectangleDialog() override;
+    qreal widthShape() const;
+    qreal heigthShape() const;
 
 private:
     Ui::CreateRectangleDialog *ui;

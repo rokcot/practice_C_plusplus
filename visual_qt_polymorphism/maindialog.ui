@@ -14,13 +14,23 @@
    <string>MainDialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QPushButton" name="delButton">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>Delete shape</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="1">
     <widget class="QPushButton" name="clearButton">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>Clear</string>
+      <string>Clear output list</string>
      </property>
     </widget>
    </item>
@@ -34,16 +44,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="delButton">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Delete shape</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="1">
     <widget class="QPushButton" name="listButton">
      <property name="focusPolicy">
@@ -54,10 +54,20 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="QPlainTextEdit" name="logText">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QPushButton" name="generateButton">
+     <property name="text">
+      <string>Generate shape</string>
      </property>
     </widget>
    </item>

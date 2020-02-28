@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>CreateRectangleDialog</class>
- <widget class="QWidget" name="CreateRectangleDialog">
+ <widget class="QDialog" name="CreateRectangleDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>321</width>
-    <height>104</height>
+    <width>176</width>
+    <height>98</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,18 +21,12 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit_2"/>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="heightlabel">
      <property name="text">
       <string>Высота</string>
      </property>
     </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="heigthEdit"/>
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QPushButton" name="createButton">
@@ -41,8 +35,31 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="1">
+    <widget class="QDoubleSpinBox" name="doubleRectangleBoxWidth"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDoubleSpinBox" name="doubleRectangleBoxHeigth"/>
+   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>createButton</sender>
+   <signal>clicked()</signal>
+   <receiver>CreateRectangleDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>160</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>160</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

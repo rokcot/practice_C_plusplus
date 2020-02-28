@@ -19,6 +19,7 @@ SOURCES += \
     createcircledialog.cpp \
     createrectangledialog.cpp \
     createtriangledialog.cpp \
+    deletedialog.cpp \
     main.cpp \
     maindialog.cpp
 
@@ -26,12 +27,14 @@ HEADERS += \
     createcircledialog.h \
     createrectangledialog.h \
     createtriangledialog.h \
+    deletedialog.h \
     maindialog.h
 
 FORMS += \
     createcircledialog.ui \
     createrectangledialog.ui \
     createtriangledialog.ui \
+    deletedialog.ui \
     maindialog.ui
 
 TRANSLATIONS += \

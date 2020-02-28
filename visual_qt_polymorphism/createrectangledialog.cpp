@@ -2,7 +2,7 @@
 #include "ui_createrectangledialog.h"
 
 CreateRectangleDialog::CreateRectangleDialog(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::CreateRectangleDialog)
 {
     ui->setupUi(this);
@@ -11,4 +11,12 @@ CreateRectangleDialog::CreateRectangleDialog(QWidget *parent) :
 CreateRectangleDialog::~CreateRectangleDialog()
 {
     delete ui;
+}
+qreal CreateRectangleDialog::widthShape() const
+{
+    return ui->doubleRectangleBoxWidth->value();
+}
+qreal CreateRectangleDialog::heigthShape() const
+{
+    return ui->doubleRectangleBoxHeigth->value();
 }

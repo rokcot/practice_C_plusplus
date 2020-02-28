@@ -2,7 +2,7 @@
 #include "ui_createcircledialog.h"
 
 CreateCircleDialog::CreateCircleDialog(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::CreateCircleDialog)
 {
     ui->setupUi(this);
@@ -11,4 +11,9 @@ CreateCircleDialog::CreateCircleDialog(QWidget *parent) :
 CreateCircleDialog::~CreateCircleDialog()
 {
     delete ui;
+}
+
+qreal CreateCircleDialog::radius() const
+{
+    return ui->doubleCircleBox->value();
 }
