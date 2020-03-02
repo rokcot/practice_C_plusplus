@@ -17,6 +17,9 @@ public:
     int first() const;
     int count() const;
 
+    void setFirst(int index);
+    void setCount(int count);
+
 private:
     Ui::DeleteDialog *ui;
 };

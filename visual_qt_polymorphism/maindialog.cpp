@@ -41,7 +41,13 @@ void MainDialog::generateShape()
 
 void MainDialog::delShape()
 {
+    QModelIndexList selected = ui->listView->selectionModel()->selectedIndexes();
     DeleteDialog dialog;
+    if (!selected.isEmpty())
+    {
+        dialog.setFirst(selected.first().row());
+        dialog.setCount(selected.last().row() - selected.first().row()+1);
+    }
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
