@@ -19,6 +19,7 @@ SOURCES += \
     createcircledialog.cpp \
     createrectangledialog.cpp \
     createtriangledialog.cpp \
+    datamodel.cpp \
     deletedialog.cpp \
     main.cpp \
     maindialog.cpp
@@ -27,6 +28,7 @@ HEADERS += \
     createcircledialog.h \
     createrectangledialog.h \
     createtriangledialog.h \
+    datamodel.h \
     deletedialog.h \
     maindialog.h
 

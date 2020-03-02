@@ -12,6 +12,7 @@ MainDialog::MainDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::MainDialog)
     , m_createMenu(nullptr)
+    , m_dataModel(new DataModel())
 {
     ui->setupUi(this);
 
@@ -40,48 +41,7 @@ void MainDialog::clearLog()
 
 void MainDialog::generateShape()
 {
-    for(int i=0;i<100;i++)
-    {
-        int rnd =  qrand() % 3 +1;
-        switch (rnd)
-        {
-        case 1:
-        {
-            int radius =  qrand() % 10 +1;
-            if (radius > 0.0)
-            {
-                auto shape = Shape::create<Circle>(radius);
-                figure_list.push_back(shape);
-            }
-            break;
-        }
-        case 2:
-        {
-            int A = qrand() % 10 +1;
-            int B = qrand() % (A+3) + A;
-            int C = qrand() % (B+3) + B;
-            if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
-            {
-                auto shape = Shape::create<Triangle>(A,B,C);
-                figure_list.push_back(shape);
-            }
-            break;
-        }
-        case 3:
-        {
-            int height = qrand() % 10 +1;
-            int width = qrand() % 10 +1;
-            if (width > 0.0 && height > 0.0)
-            {
-                auto shape = Shape::create<Rectangle>(width,height);
-                figure_list.push_back(shape);
-            }
-            break;
-        }
-        default:
-            break;
-        }
-    }
+    m_dataModel->generateShape();
 }
 
 void MainDialog::delShape()
@@ -90,20 +50,7 @@ void MainDialog::delShape()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        int start = dialog.first();
-        int count = dialog.count();
-
-        auto iter = figure_list.begin();
-        std::advance(iter, start);
-        for(int i=0;i<count;i++)
-        {
-            if (iter != figure_list.end())
-            {
-                auto item = *iter;
-                figure_list.erase(iter);
-                qDebug()<<"delete"<<endl;
-            }
-        }
+        m_dataModel->delShape(dialog.first(),dialog.count());
     }
     else
     {
@@ -113,15 +60,7 @@ void MainDialog::delShape()
 
 void MainDialog::getShape()
 {
-    int step=0;
-    QString temp="";
-    for (auto iter = figure_list.begin(); iter != figure_list.end(); iter++)
-    {
-        step++;
-        temp+="Фигура "+QString::number(step)+" "+(*iter)->getName()+" ("+(*iter)->getNumber()+": "
-                                  +") - "+"Площадь = "+QString::number((*iter)->area())+"\r\n";
-    }
-    ui->logText->setPlainText(temp);
+    ui->logText->setPlainText(m_dataModel->getShape());
 }
 
 void MainDialog::createCircle()
@@ -130,14 +69,7 @@ void MainDialog::createCircle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        qreal radius = dialog.radius();
-        if (radius > 0.0)
-        {
-            auto shape = Shape::create<Circle>(radius);
-            figure_list.push_back(shape);
-            qDebug()<< "Создана новая фигура! площадь которого:"
-                    << shape->area();
-        }
+        m_dataModel->addCircle(dialog.radius());
     }
     else
     {
@@ -151,16 +83,7 @@ void MainDialog::createTriangle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        qreal A = dialog.A();
-        qreal B = dialog.B();
-        qreal C = dialog.C();
-        if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
-        {
-            auto shape = Shape::create<Triangle>(A,B,C);
-            figure_list.push_back(shape);
-            qDebug()<< "Создана новая фигура! площадь которого:"
-                    << shape->area();
-        }
+        m_dataModel->addTriangle(dialog.A(),dialog.B(),dialog.C());
     }
     else
     {
@@ -174,15 +97,8 @@ void MainDialog::createRectangle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        qreal width = dialog.widthShape();
-        qreal height = dialog.heigthShape();
-        if (width > 0.0 && height > 0.0)
-        {
-            auto shape = Shape::create<Rectangle>(width,height);
-            figure_list.push_back(shape);
-            qDebug()<< "Создана новая фигура! площадь которого:"
-                    << shape->area();
-        }
+        m_dataModel->addRectangle(dialog.width(),dialog.height());
+
     }
     else
     {
