@@ -12,11 +12,11 @@ CreateRectangleDialog::~CreateRectangleDialog()
 {
     delete ui;
 }
-qreal CreateRectangleDialog::widthShape() const
+qreal CreateRectangleDialog::shapeWidth() const
 {
     return ui->doubleRectangleBoxWidth->value();
 }
-qreal CreateRectangleDialog::heigthShape() const
+qreal CreateRectangleDialog::shapeHeight() const
 {
     return ui->doubleRectangleBoxHeigth->value();
 }

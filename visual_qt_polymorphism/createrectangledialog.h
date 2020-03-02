@@ -14,8 +14,8 @@ class CreateRectangleDialog : public QDialog
 public:
     explicit CreateRectangleDialog(QWidget *parent = nullptr);
     ~CreateRectangleDialog() override;
-    qreal widthShape() const;
-    qreal heigthShape() const;
+    qreal shapeWidth() const;
+    qreal shapeHeight() const;
 
 private:
     Ui::CreateRectangleDialog *ui;

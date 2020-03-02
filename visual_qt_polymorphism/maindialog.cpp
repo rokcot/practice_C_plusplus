@@ -16,15 +16,15 @@ MainDialog::MainDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->listView->setModel(m_dataModel.get());
+
     m_createMenu = new QMenu(ui->addButton);
     m_createMenu->addAction("Создать окружность", this, &MainDialog::createCircle);
     m_createMenu->addAction("Создать треугольник", this, &MainDialog::createTriangle);
     m_createMenu->addAction("Создать прямоугольник", this, &MainDialog::createRectangle);
     ui->addButton->setMenu(m_createMenu);
 
-    connect(ui->listButton, &QPushButton::clicked, this, &MainDialog::getShape);
     connect(ui->delButton, &QPushButton::clicked, this, &MainDialog::delShape);
-    connect(ui->clearButton, &QPushButton::clicked, this, &MainDialog::clearLog);
     connect(ui->generateButton, &QPushButton::clicked, this, &MainDialog::generateShape);
 
 }
@@ -32,11 +32,6 @@ MainDialog::MainDialog(QWidget *parent)
 MainDialog::~MainDialog()
 {
     delete ui;
-}
-
-void MainDialog::clearLog()
-{
-    ui->logText->setPlainText("");
 }
 
 void MainDialog::generateShape()
@@ -58,10 +53,6 @@ void MainDialog::delShape()
     }
 }
 
-void MainDialog::getShape()
-{
-    ui->logText->setPlainText(m_dataModel->getShape());
-}
 
 void MainDialog::createCircle()
 {
@@ -97,8 +88,7 @@ void MainDialog::createRectangle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        m_dataModel->addRectangle(dialog.width(),dialog.height());
-
+        m_dataModel->addRectangle(dialog.shapeWidth(),dialog.shapeHeight());
     }
     else
     {

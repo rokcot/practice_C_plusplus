@@ -23,9 +23,7 @@ public:
     void createTriangle();
     void createRectangle();
 
-    void getShape();
     void delShape();
-    void clearLog();
     void generateShape();
 
 

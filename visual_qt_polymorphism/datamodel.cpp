@@ -4,6 +4,34 @@
 #include <QTime>
 #include <QtMath>
 
+class Shape
+{
+public:
+    virtual ~Shape()
+    {}
+    virtual double area() const = 0;
+    virtual QString getNumber() const = 0;
+    QString getName() const
+    {
+        return m_name;
+    }
+
+    template <typename T, typename ...Params>
+    static ShapePtr create(Params... params)
+    {
+        return QSharedPointer<T>::create(params...);
+    }
+
+protected:
+    explicit Shape(const QString& name) : m_name(name)
+    {
+    }
+
+private:
+    QString m_name = "figure";
+};
+
+
 class Circle : public Shape
 {
 public:
@@ -63,18 +91,51 @@ private:
 
 };
 
-DataModel::DataModel(QObject *parent) : QObject(parent)
+DataModel::DataModel(QObject *parent) : QAbstractListModel(parent)
 {
+}
+
+int DataModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent)
+    return m_figureList.count();
+}
+
+QVariant DataModel::data(const QModelIndex &index, int role) const
+{
+    switch (role)
+    {
+    case Qt::DisplayRole:
+    {
+        if (index.row() < 0 || index.row() >= rowCount())
+        {
+            return QVariant();
+        }
+        const auto& shape = m_figureList.at(index.row());
+        if (shape)
+        {
+            return shape->getName() + ": " + shape->getNumber()+
+                    " - "+"Площадь = "+QString::number(shape->area());
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return QVariant();
 }
 
 void DataModel::addCircle(qreal radius)
 {
     if (radius > 0.0)
     {
+        beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
         auto shape = Shape::create<Circle>(radius);
         m_figureList.push_back(shape);
         qDebug()<< "Создана новая фигура! площадь которого:"
                 << shape->area();
+//        emit dataChanged()
+        endInsertRows();
     }
 }
 
@@ -82,10 +143,12 @@ void DataModel::addTriangle(qreal A, qreal B, qreal C)
 {
     if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
     {
+        beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
         auto shape = Shape::create<Triangle>(A,B,C);
         m_figureList.push_back(shape);
         qDebug()<< "Создана новая фигура! площадь которого:"
                 << shape->area();
+        endInsertRows();
     }
 }
 
@@ -93,10 +156,13 @@ void DataModel::addRectangle(qreal width, qreal height)
 {
     if (width > 0.0 && height > 0.0)
     {
+        beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
         auto shape = Shape::create<Rectangle>(width,height);
         m_figureList.push_back(shape);
+        endInsertRows();
         qDebug()<< "Создана новая фигура! площадь которого:"
                 << shape->area();
+
     }
 }
 
@@ -104,43 +170,48 @@ void DataModel::delShape(int start, int count)
 {
     auto iter = m_figureList.begin();
     std::advance(iter, start);
+    beginRemoveRows(QModelIndex(), start, start + count - 1);
     for(int i=0;i<count;i++)
     {
         if (iter != m_figureList.end())
         {
             auto item = *iter;
             m_figureList.erase(iter);
-            qDebug()<<"delete"<<endl;
         }
     }
+    endRemoveRows();
 }
 
 void DataModel::generateShape(int count)
 {
     for(int i=0;i<count;i++)
     {
-        int rnd =  qrand() % 3 +1;
+        int rnd = qrand() % 3 +1;
         switch (rnd)
         {
         case 1:
         {
-            int radius =  qrand() % 10 +1;
+            int radius = qrand() % 10 +1;
             if (radius > 0.0)
             {
+                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
                 auto shape = Shape::create<Circle>(radius);
                 m_figureList.push_back(shape);
+                endInsertRows();
             }
             break;
         }
         case 2:
         {
-            int A = qrand() % 10 +1;
+            int A = qrand() % 10 + 1;
             int B = qrand() % 10 + 1;
             int C = qrand() % 10 + 1;
             if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
             {
+                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
                 auto shape = Shape::create<Triangle>(A,B,C);
                 m_figureList.push_back(shape);
+                endInsertRows();
             }
             break;
         }
@@ -150,8 +221,10 @@ void DataModel::generateShape(int count)
             int width = qrand() % 10 +1;
             if (width > 0.0 && height > 0.0)
             {
+                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
                 auto shape = Shape::create<Rectangle>(width,height);
                 m_figureList.push_back(shape);
+                endInsertRows();
             }
             break;
         }
@@ -161,15 +234,3 @@ void DataModel::generateShape(int count)
     }
 }
 
-QString DataModel::getShape()
-{
-    int step=0;
-    QString temp="";
-    for (auto iter = m_figureList.begin(); iter != m_figureList.end(); iter++)
-    {
-        step++;
-        temp+="Фигура "+QString::number(step)+" "+(*iter)->getName()+" ("+(*iter)->getNumber()+": "
-                                  +") - "+"Площадь = "+QString::number((*iter)->area())+"\r\n";
-    }
-    return temp;
-}
