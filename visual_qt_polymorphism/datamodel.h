@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QVector>
 #include <QSharedPointer>
+#include <QThread>
 
 QT_BEGIN_NAMESPACE
 class Shape;
@@ -23,7 +24,8 @@ public:
     void addTriangle(qreal a, qreal b, qreal c);
     void addRectangle(qreal width, qreal height);
     void delShape(int start, int count);
-    void generateShape(int count = 100);
+    void generateShape();
+    void generateShapeWithStep();
     void getRandToGenerate();
 
 

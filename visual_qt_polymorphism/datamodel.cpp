@@ -190,72 +190,61 @@ void DataModel::delShape(int start, int count)
     endRemoveRows();
 }
 
-void DataModel::generateShape(int count)
+void DataModel::generateShape()
 {
     qsrand (static_cast <uint> (QTime::currentTime().msec()));
-    int i = count;
-    while(i > 0)
+
+    switch (1 + qrand() % 3)
     {
-        switch (1 + qrand() % 3)
+    case 1:
+    {
+        double radius = getRandom<double>(0.0,10.0);
+        if (radius > 0.0)
         {
-        case 1:
-        {
-            double radius = getRandom<double>(0.0,10.0);
-            if (radius > 0.0)
-            {
-                beginInsertRows(QModelIndex(),
-                                m_figureList.count(), m_figureList.count());
-                auto shape = Shape::create<Circle>(radius);
-                m_figureList.push_back(shape);
-                endInsertRows();
-            }
-            else
-            {
-                continue;
-            }
-            break;
+            beginInsertRows(QModelIndex(),
+                            m_figureList.count(), m_figureList.count());
+            auto shape = Shape::create<Circle>(radius);
+            m_figureList.push_back(shape);
+            endInsertRows();
         }
-        case 2:
-        {
-            double a = getRandom<double>(0.0,10.0);
-            double b = getRandom<double>(0.0,10.0);
-            double c = getRandom<double>(0.0,10.0);
-            if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
-            {
-                beginInsertRows(QModelIndex(),
-                                m_figureList.count(), m_figureList.count());
-                auto shape = Shape::create<Triangle>(a, b, c);
-                m_figureList.push_back(shape);
-                endInsertRows();
-            }
-            else
-            {
-                continue;
-            }
-            break;
-        }
-        case 3:
-        {
-            double height = getRandom<double>(0.0,10.0);
-            double width = getRandom<double>(0.0,10.0);
-            if (width > 0.0 && height > 0.0)
-            {
-                beginInsertRows(QModelIndex(),
-                                m_figureList.count(), m_figureList.count());
-                auto shape = Shape::create<Rectangle>(width, height);
-                m_figureList.push_back(shape);
-                endInsertRows();
-            }
-            else
-            {
-                continue;
-            }
-            break;
-        }
-        default:
-            break;
-        }
-        --i;
+
+        break;
     }
+    case 2:
+    {
+        double a = getRandom<double>(0.0,10.0);
+        double b = getRandom<double>(0.0,10.0);
+        double c = getRandom<double>(0.0,10.0);
+        if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
+        {
+            beginInsertRows(QModelIndex(),
+                            m_figureList.count(), m_figureList.count());
+            auto shape = Shape::create<Triangle>(a, b, c);
+            m_figureList.push_back(shape);
+            endInsertRows();
+        }
+
+        break;
+    }
+    case 3:
+    {
+        double height = getRandom<double>(0.0,10.0);
+        double width = getRandom<double>(0.0,10.0);
+        if (width > 0.0 && height > 0.0)
+        {
+            beginInsertRows(QModelIndex(),
+                            m_figureList.count(), m_figureList.count());
+            auto shape = Shape::create<Rectangle>(width, height);
+            m_figureList.push_back(shape);
+            endInsertRows();
+        }
+
+        break;
+    }
+    default:
+        break;
+    }
+
+
 }
 

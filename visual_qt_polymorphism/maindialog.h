@@ -2,7 +2,8 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
-
+#include <QTimer>
+#include <QTime>
 #include "datamodel.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,6 +25,9 @@ public:
     void createRectangle();
     void delShape();
     void generateShape();
+    void generateShapeWithStep();
+
+    int in = 0;
 
 private:
     void delContext();
@@ -34,5 +38,7 @@ private:
     QMenu* m_createMenu;
     QScopedPointer<DataModel, QScopedPointerDeleteLater> m_dataModel;
     QMenu* menu;
+    QMenu* generateShapeMenu;
+    QTimer* timer;
 };
 #endif // MAINDIALOG_H

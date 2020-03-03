@@ -2,6 +2,7 @@
 #include "ui_maindialog.h"
 
 #include <QMenu>
+//#include <QMetaMethod>
 
 #include "createcircledialog.h"
 #include "createtriangledialog.h"
@@ -13,6 +14,7 @@ MainDialog::MainDialog(QWidget *parent)
     , ui(new Ui::MainDialog)
     , m_createMenu(nullptr)
     , m_dataModel(new DataModel())
+    , timer(new QTimer(this))
 {
     ui->setupUi(this);
 
@@ -26,6 +28,19 @@ MainDialog::MainDialog(QWidget *parent)
 
     menu = new QMenu(this);
     menu->addAction("delete", this, &MainDialog::delContext);
+
+    generateShapeMenu = new QMenu(ui->generateButton);
+    generateShapeMenu->addAction("generate", this, &MainDialog::generateShape);
+    generateShapeMenu->addAction("generate with step", timer, QOverload<>::of(&QTimer::start));
+    generateShapeMenu->addAction("stop generate", timer, &QTimer::stop);
+    ui->generateButton->setMenu(generateShapeMenu);
+
+    QFont font("Times", 28, QFont::Bold);
+    ui->label->setFont(font);
+    ui->label->setText(QTime::currentTime().toString("hh:mm:ss"));
+    timer->setInterval(1000);
+//    timer->setSingleShot(true);<---alternative
+    connect(timer, &QTimer::timeout, this, &MainDialog::generateShapeWithStep);
 
     connect(ui->delButton, &QPushButton::clicked, this, &MainDialog::delShape);
     connect(ui->generateButton, &QPushButton::clicked,
@@ -42,12 +57,26 @@ MainDialog::~MainDialog()
 
 void MainDialog::generateShape()
 {
-    m_dataModel->generateShape();
+    int i = 100;
+    while(i > 0)
+    {
+        m_dataModel->generateShape();
+        ++i;
+    }
 }
+
+void MainDialog::generateShapeWithStep()
+{
+    m_dataModel->generateShape();
+    ui->label->setText(QTime::currentTime().toString("hh:mm:ss"));
+//    timer->start();<---alternative
+}
+
 void MainDialog::listContextMenu(const QPoint &pos)
 {
     menu->popup(ui->listView->viewport()->mapToGlobal(pos));
 }
+
 void MainDialog::delContext()
 {
     QModelIndexList selected = ui->listView->selectionModel()->selectedIndexes();

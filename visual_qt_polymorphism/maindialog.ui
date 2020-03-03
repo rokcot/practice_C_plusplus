@@ -14,20 +14,13 @@
    <string>MainDialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <widget class="QListView" name="listView">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ContiguousSelection</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QPushButton" name="generateButton">
-     <property name="text">
-      <string>Generate shape</string>
      </property>
     </widget>
    </item>
@@ -48,6 +41,20 @@
      </property>
      <property name="text">
       <string>Delete shape</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QPushButton" name="generateButton">
+     <property name="text">
+      <string>Generate shape</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>
