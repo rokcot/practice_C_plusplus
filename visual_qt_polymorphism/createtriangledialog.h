@@ -14,9 +14,9 @@ class CreateTriangleDialog : public QDialog
 public:
     explicit CreateTriangleDialog(QWidget *parent = nullptr);
     ~CreateTriangleDialog() override;
-    qreal A() const;
-    qreal B() const;
-    qreal C() const;
+    qreal a() const;
+    qreal b() const;
+    qreal c() const;
 
 private:
     Ui::CreateTriangleDialog *ui;

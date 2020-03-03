@@ -13,15 +13,15 @@ CreateTriangleDialog::~CreateTriangleDialog()
     delete ui;
 }
 
-qreal CreateTriangleDialog::A() const
+qreal CreateTriangleDialog::a() const
 {
     return ui->doubleTriangleBoxA->value();
 }
-qreal CreateTriangleDialog::B() const
+qreal CreateTriangleDialog::b() const
 {
     return ui->doubleTriangleBoxB->value();
 }
-qreal CreateTriangleDialog::C() const
+qreal CreateTriangleDialog::c() const
 {
     return ui->doubleTriangleBoxC->value();
 }

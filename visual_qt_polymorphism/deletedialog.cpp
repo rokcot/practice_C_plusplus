@@ -21,12 +21,12 @@ int DeleteDialog::count() const
     return ui->deleteCountBox->value();
 }
 
-void DeleteDialog::setFirst(int index)
+void DeleteDialog::setFirst(const int &index)
 {
     ui->deleteStartBox->setValue(index);
 }
 
-void DeleteDialog::setCount(int count)
+void DeleteDialog::setCount(const int &count)
 {
     ui->deleteCountBox->setValue(count);
 }

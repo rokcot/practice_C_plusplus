@@ -4,6 +4,13 @@
 #include <QTime>
 #include <QtMath>
 
+template <typename T>
+T getRandom(T lower, T upper)
+{
+    return  lower + static_cast <T> (qrand()) /
+            (static_cast <T> (RAND_MAX/(upper-lower)));
+}
+
 class Shape
 {
 public:
@@ -35,7 +42,7 @@ private:
 class Circle : public Shape
 {
 public:
-    Circle(int r) : Shape("circle"), m_radius(r)
+    Circle(double r) : Shape("circle"), m_radius(r)
     {
     }
     double area() const override
@@ -58,12 +65,13 @@ public:
     double area() const override
     {
         double s = (m_A + m_B + m_C) / 2;
-        double p = pow(s*(s - m_A)*(s - m_B)*(s - m_C), 0.5);
+        double p = qPow(s * (s - m_A) * (s - m_B) * (s - m_C), 0.5);
         return p;
     }
     QString getNumber() const override
     {
-        return "A="+QString::number(m_A)+" B="+QString::number(m_B)+" C="+QString::number(m_C);
+        return "A=" + QString::number(m_A) + " B=" + QString::number(m_B) +
+                " C="+QString::number(m_C);
     }
 private:
     double m_A = 0;
@@ -82,7 +90,8 @@ public:
     }
     QString getNumber() const override
     {
-        return "height="+QString::number(m_height)+" m_width="+QString::number(m_width);
+        return "height=" + QString::number(m_height) +
+                " m_width=" + QString::number(m_width);
     }
 
 private:
@@ -114,8 +123,8 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
         const auto& shape = m_figureList.at(index.row());
         if (shape)
         {
-            return shape->getName() + ": " + shape->getNumber()+
-                    " - "+"Площадь = "+QString::number(shape->area());
+            return shape->getName() + ": " + shape->getNumber() +
+                    " - " + "Площадь = " + QString::number(shape->area());
         }
         break;
     }
@@ -134,17 +143,16 @@ void DataModel::addCircle(qreal radius)
         m_figureList.push_back(shape);
         qDebug()<< "Создана новая фигура! площадь которого:"
                 << shape->area();
-//        emit dataChanged()
         endInsertRows();
     }
 }
 
-void DataModel::addTriangle(qreal A, qreal B, qreal C)
+void DataModel::addTriangle(qreal a, qreal b, qreal c)
 {
-    if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
+    if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
     {
         beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
-        auto shape = Shape::create<Triangle>(A,B,C);
+        auto shape = Shape::create<Triangle>(a, b, c);
         m_figureList.push_back(shape);
         qDebug()<< "Создана новая фигура! площадь которого:"
                 << shape->area();
@@ -157,7 +165,7 @@ void DataModel::addRectangle(qreal width, qreal height)
     if (width > 0.0 && height > 0.0)
     {
         beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
-        auto shape = Shape::create<Rectangle>(width,height);
+        auto shape = Shape::create<Rectangle>(width, height);
         m_figureList.push_back(shape);
         endInsertRows();
         qDebug()<< "Создана новая фигура! площадь которого:"
@@ -171,7 +179,7 @@ void DataModel::delShape(int start, int count)
     auto iter = m_figureList.begin();
     std::advance(iter, start);
     beginRemoveRows(QModelIndex(), start, start + count - 1);
-    for(int i=0;i<count;i++)
+    for(int i = 0; i < count; i++)
     {
         if (iter != m_figureList.end())
         {
@@ -184,53 +192,70 @@ void DataModel::delShape(int start, int count)
 
 void DataModel::generateShape(int count)
 {
-    for(int i=0;i<count;i++)
+    qsrand (static_cast <uint> (QTime::currentTime().msec()));
+    int i = count;
+    while(i > 0)
     {
-        int rnd = qrand() % 3 +1;
-        switch (rnd)
+        switch (1 + qrand() % 3)
         {
         case 1:
         {
-            int radius = qrand() % 10 +1;
+            double radius = getRandom<double>(0.0,10.0);
             if (radius > 0.0)
             {
-                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
+                beginInsertRows(QModelIndex(),
+                                m_figureList.count(), m_figureList.count());
                 auto shape = Shape::create<Circle>(radius);
                 m_figureList.push_back(shape);
                 endInsertRows();
+            }
+            else
+            {
+                continue;
             }
             break;
         }
         case 2:
         {
-            int A = qrand() % 10 + 1;
-            int B = qrand() % 10 + 1;
-            int C = qrand() % 10 + 1;
-            if ((A > 0.0) && (B > 0.0) && (C > 0.0) && (A < B + C))
+            double a = getRandom<double>(0.0,10.0);
+            double b = getRandom<double>(0.0,10.0);
+            double c = getRandom<double>(0.0,10.0);
+            if ((a > 0.0) && (b > 0.0) && (c > 0.0) && (a < b + c))
             {
-                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
-                auto shape = Shape::create<Triangle>(A,B,C);
+                beginInsertRows(QModelIndex(),
+                                m_figureList.count(), m_figureList.count());
+                auto shape = Shape::create<Triangle>(a, b, c);
                 m_figureList.push_back(shape);
                 endInsertRows();
+            }
+            else
+            {
+                continue;
             }
             break;
         }
         case 3:
         {
-            int height = qrand() % 10 +1;
-            int width = qrand() % 10 +1;
+            double height = getRandom<double>(0.0,10.0);
+            double width = getRandom<double>(0.0,10.0);
             if (width > 0.0 && height > 0.0)
             {
-                beginInsertRows(QModelIndex(), m_figureList.count(), m_figureList.count());
-                auto shape = Shape::create<Rectangle>(width,height);
+                beginInsertRows(QModelIndex(),
+                                m_figureList.count(), m_figureList.count());
+                auto shape = Shape::create<Rectangle>(width, height);
                 m_figureList.push_back(shape);
                 endInsertRows();
+            }
+            else
+            {
+                continue;
             }
             break;
         }
         default:
             break;
         }
+        --i;
     }
 }
 

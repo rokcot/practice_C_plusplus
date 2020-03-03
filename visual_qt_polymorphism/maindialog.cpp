@@ -19,18 +19,17 @@ MainDialog::MainDialog(QWidget *parent)
     ui->listView->setModel(m_dataModel.get());
 
     m_createMenu = new QMenu(ui->addButton);
-    m_createMenu->addAction("Создать окружность", this, &MainDialog::createCircle);
-    m_createMenu->addAction("Создать треугольник", this, &MainDialog::createTriangle);
-    m_createMenu->addAction("Создать прямоугольник", this, &MainDialog::createRectangle);
+    m_createMenu->addAction("Create circle", this, &MainDialog::createCircle);
+    m_createMenu->addAction("Create triangle", this, &MainDialog::createTriangle);
+    m_createMenu->addAction("Create rectangle", this, &MainDialog::createRectangle);
     ui->addButton->setMenu(m_createMenu);
 
     menu = new QMenu(this);
     menu->addAction("delete", this, &MainDialog::delContext);
 
-
     connect(ui->delButton, &QPushButton::clicked, this, &MainDialog::delShape);
-    connect(ui->generateButton, &QPushButton::clicked, this, &MainDialog::generateShape);
-
+    connect(ui->generateButton, &QPushButton::clicked,
+            this, &MainDialog::generateShape);
     connect(ui->listView, &QListView::customContextMenuRequested,
             this, &MainDialog::listContextMenu);
 
@@ -55,8 +54,8 @@ void MainDialog::delContext()
     DeleteDialog dialog;
     if (!selected.isEmpty())
     {
-       m_dataModel->delShape(selected.first().row(),selected.last().row()
-                             - selected.first().row()+1);
+       m_dataModel->delShape(selected.first().row(),selected.last().row() -
+                             selected.first().row() + 1);
     }
 }
 
@@ -67,12 +66,12 @@ void MainDialog::delShape()
     if (!selected.isEmpty())
     {
         dialog.setFirst(selected.first().row());
-        dialog.setCount(selected.last().row() - selected.first().row()+1);
+        dialog.setCount(selected.last().row() - selected.first().row() + 1);
     }
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        m_dataModel->delShape(dialog.first(),dialog.count());
+        m_dataModel->delShape(dialog.first(), dialog.count());
     }
     else
     {
@@ -101,7 +100,7 @@ void MainDialog::createTriangle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        m_dataModel->addTriangle(dialog.A(),dialog.B(),dialog.C());
+        m_dataModel->addTriangle(dialog.a(), dialog.b(), dialog.c());
     }
     else
     {
@@ -115,7 +114,7 @@ void MainDialog::createRectangle()
     if (dialog.exec() == QDialog::Accepted)
     {
         qDebug("ACCEPTED");
-        m_dataModel->addRectangle(dialog.shapeWidth(),dialog.shapeHeight());
+        m_dataModel->addRectangle(dialog.shapeWidth(), dialog.shapeHeight());
     }
     else
     {

@@ -20,10 +20,11 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     void addCircle(qreal radius);
-    void addTriangle(qreal A, qreal B, qreal C);
+    void addTriangle(qreal a, qreal b, qreal c);
     void addRectangle(qreal width, qreal height);
     void delShape(int start, int count);
     void generateShape(int count = 100);
+    void getRandToGenerate();
 
 
 private:
