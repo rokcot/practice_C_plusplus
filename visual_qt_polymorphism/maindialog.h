@@ -22,14 +22,17 @@ public:
     void createCircle();
     void createTriangle();
     void createRectangle();
-
     void delShape();
     void generateShape();
 
+private:
+    void delContext();
+    void listContextMenu(const QPoint &pos);
 
 private:
     Ui::MainDialog *ui;
     QMenu* m_createMenu;
     QScopedPointer<DataModel, QScopedPointerDeleteLater> m_dataModel;
+    QMenu* menu;
 };
 #endif // MAINDIALOG_H

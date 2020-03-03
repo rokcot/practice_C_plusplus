@@ -24,8 +24,15 @@ MainDialog::MainDialog(QWidget *parent)
     m_createMenu->addAction("Создать прямоугольник", this, &MainDialog::createRectangle);
     ui->addButton->setMenu(m_createMenu);
 
+    menu = new QMenu(this);
+    menu->addAction("delete", this, &MainDialog::delContext);
+
+
     connect(ui->delButton, &QPushButton::clicked, this, &MainDialog::delShape);
     connect(ui->generateButton, &QPushButton::clicked, this, &MainDialog::generateShape);
+
+    connect(ui->listView, &QListView::customContextMenuRequested,
+            this, &MainDialog::listContextMenu);
 
 }
 
@@ -37,6 +44,20 @@ MainDialog::~MainDialog()
 void MainDialog::generateShape()
 {
     m_dataModel->generateShape();
+}
+void MainDialog::listContextMenu(const QPoint &pos)
+{
+    menu->popup(ui->listView->viewport()->mapToGlobal(pos));
+}
+void MainDialog::delContext()
+{
+    QModelIndexList selected = ui->listView->selectionModel()->selectedIndexes();
+    DeleteDialog dialog;
+    if (!selected.isEmpty())
+    {
+       m_dataModel->delShape(selected.first().row(),selected.last().row()
+                             - selected.first().row()+1);
+    }
 }
 
 void MainDialog::delShape()
