@@ -112,15 +112,15 @@ int DataModel::rowCount(const QModelIndex &parent) const
 
 QVariant DataModel::data(const QModelIndex &index, int role) const
 {
+    if (index.row() < 0 || index.row() >= rowCount())
+    {
+        return QVariant();
+    }
+    const auto& shape = m_figureList.at(index.row());
     switch (role)
     {
     case Qt::DisplayRole:
     {
-        if (index.row() < 0 || index.row() >= rowCount())
-        {
-            return QVariant();
-        }
-        const auto& shape = m_figureList.at(index.row());
         if (shape)
         {
             return shape->getName() + ": " + shape->getNumber() +
@@ -128,6 +128,12 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
         }
         break;
     }
+    case ItemDataRole::NameRole:
+        if (shape)
+        {
+            return shape->getName();
+        }
+        break;
     default:
         break;
     }
@@ -137,7 +143,8 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> DataModel::roleNames() const
 {
     QHash<int, QByteArray> result = {
-        { Qt::DisplayRole, "text" }
+        { Qt::DisplayRole, "text" },
+        { ItemDataRole::NameRole, "name" }
     };
     return result;
 }

@@ -2,12 +2,15 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
+import QtQuick.Controls.Styles 1.4
 
 Window {
     visible: true
-    width: 480
+    width: 520
     height: 600
     title: qsTr("Hello World")
+    property int aNumber: 0
+    property int iNumber: 0
 
     Item {
         id: root
@@ -15,15 +18,6 @@ Window {
         height: 100
         anchors.fill: parent
 
-        MouseArea
-        {
-            anchors.fill: parent
-
-            onClicked:
-            {
-                filler.currentIndex = index;
-            }
-        }
         ListView {
             id: filler
             anchors.top: parent.top
@@ -32,14 +26,79 @@ Window {
             anchors.bottom: generateShape.top
             model: dataModel
 
+            delegate: Rectangle {
+                focus: true
+                width: root.width
+                height: 20
+                color: ((index <= filler.currentIndex) && (index >= aNumber)) ||
+                       ((index >= filler.currentIndex) && (index <= aNumber))
+                       ? "#800000" : "black"
 
-            delegate: Text {
-                text: " "+model.text
-                font.pixelSize: 14
-                color: "black"
+                MouseArea {
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    anchors.fill: parent
+                    onClicked: {
+                        switch (mouse.button)
+                        {
+                        case Qt.RightButton:
+                            delObject.open()
+                            break;
+                        case Qt.LeftButton:
+                            if(mouse.modifiers === Qt.ControlModifier){
+                                aNumber = filler.currentIndex
+                            }else{
+                                aNumber = model.index
+                            }
+                            filler.currentIndex = model.index
+                            console.log(filler.currentIndex, " - ",
+                                        index, aNumber)
+                            break;
+                        default:
+                            break;
+                        }
+                    }
                 }
-
-
+                Menu {
+                    id: delObject
+                    y: addShape.height
+                    MenuItem {
+                        text: "Delete"
+                        onClicked: {
+                            if(aNumber > filler.currentIndex){
+                                iNumber = filler.currentIndex
+                                iNumber = (aNumber+1) - iNumber
+                                dataModel.delShape(iNumber, aNumber)
+                            }else if(aNumber != filler.currentIndex){
+                                iNumber = filler.currentIndex
+                                iNumber = (iNumber+1) - aNumber
+                                dataModel.delShape(aNumber, iNumber)
+                            }else{
+                                dataModel.delShape(aNumber, 1)
+                            }
+                        }
+                    }
+                }
+                Text {
+                    id: textBlock
+                    function getColor(name) {
+                        switch (name)
+                        {
+                        case "circle":
+                            return "lime"
+                        case "triangle":
+                            return "Yellow"
+                        case "rectangle":
+                            return "Fuchsia"
+                        default:
+                            return "black"
+                        }
+                    }
+                    leftPadding: 5
+                    text: model.text + "(" + getColor(model.name) + ")"
+                    font.pixelSize: 14
+                    color: getColor(model.name)
+                }
+            }
 
             boundsBehavior: ListView.StopAtBounds
         }
@@ -56,7 +115,6 @@ Window {
             Menu {
                 id: menu
                 y: addShape.height
-
                 MenuItem {
                     text: "Circle"
                     onClicked: {
@@ -87,6 +145,15 @@ Window {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             onClicked:  {
+                if(aNumber > filler.currentIndex){
+                    iNumber = filler.currentIndex
+                    iNumber = (aNumber+1) - iNumber
+                }else if(aNumber != filler.currentIndex){
+                    iNumber = filler.currentIndex
+                    iNumber = (iNumber+1) - aNumber
+                }
+                console.log("iNumber="+iNumber+" filler="+filler.currentIndex+
+                            "aNumber="+aNumber)
                 delShapeDialog.open();
             }
         }
@@ -120,7 +187,8 @@ Window {
                 SpinBox {
                     id: spinStart
                     width: 275
-                    value: 0
+                    value: filler.currentIndex >= aNumber
+                           ? aNumber : filler.currentIndex
                 }
             }
             Item {
@@ -131,7 +199,8 @@ Window {
                 SpinBox {
                     id: spinCount
                     width: 275
-                    value: 1
+                    value: filler.currentIndex == aNumber
+                           ? 1 : iNumber
                 }
             }
 
@@ -149,7 +218,9 @@ Window {
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
                 width: parent.width/2-1
-                onClicked: dataModel.delShape(spinStart.value, spinCount.value)
+                onClicked: {
+                    dataModel.delShape(spinStart.value, spinCount.value)
+                }
             }
         }
     }

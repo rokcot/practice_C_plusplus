@@ -15,6 +15,10 @@ class DataModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    enum ItemDataRole
+    {
+        NameRole = Qt::UserRole + 1
+    };
     explicit DataModel(QObject* parent = nullptr);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
