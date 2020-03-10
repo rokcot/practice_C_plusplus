@@ -18,7 +18,7 @@ public:
     {}
     virtual double area() const = 0;
     virtual QString getNumber() const = 0;
-    virtual double getData(int index) const = 0;
+    virtual QVariantMap getData() const = 0;
     QString getName() const
     {
         return m_name;
@@ -58,9 +58,11 @@ public:
     {
         m_radius = r;
     }
-    double getData(int index) const override
+    QVariantMap getData() const override
     {
-        return m_radius;
+        return QVariantMap {
+            { "radius", m_radius }
+        };
     }
 private:
     double m_radius;
@@ -94,19 +96,13 @@ public:
     {
         m_C = c;
     }
-    double getData(int index) const override
+    QVariantMap getData() const override
     {
-        switch(index)
-        {
-        case 1:
-            return m_A;
-        case 2:
-            return m_B;
-        case 3:
-            return m_C;
-        default:
-            return 0;
-        }
+        return QVariantMap {
+            { "a", m_A },
+            { "b", m_B },
+            { "c", m_C }
+        };
     }
 
 private:
@@ -137,17 +133,12 @@ public:
     {
         m_width = width;
     }
-    double getData(int index) const override
+    QVariantMap getData() const override
     {
-        switch(index)
-        {
-        case 1:
-            return m_height;
-        case 2:
-            return m_width;
-        default:
-            return 0;
-        }
+        return QVariantMap {
+            { "width", m_width },
+            { "height", m_height }
+        };
     }
 private:
     double m_height;
@@ -192,7 +183,7 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
     case ItemDataRole::Data:
         if (shape)
         {
-            return shape->getData(idert);
+            return shape->getData();
         }
         break;
     default:

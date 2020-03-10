@@ -5,11 +5,11 @@ SpinBox {
     id: spinbox
     from: 0
     value: 1
-    to: 100 * ratio
-    stepSize: Math.pow(10, decimals / 2)
+    to: 10000 * ratio
+    stepSize: Math.pow(10000, decimals / 5)
     anchors.centerIn: parent
 
-    property int decimals: 2
+    property int decimals: 5
     property real realValue: value / ratio
     property int ratio: Math.pow(10, decimals)
 

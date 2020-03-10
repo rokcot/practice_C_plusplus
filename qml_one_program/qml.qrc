@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>AddCircleDialog.qml</file>
         <file>DoubleSpinBox.qml</file>
+        <file>AddRectangleDialog.qml</file>
+        <file>AddTriangleDialog.qml</file>
     </qresource>
 </RCC>

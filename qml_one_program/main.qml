@@ -12,12 +12,12 @@ Window {
     property int aNumber: 0
     property int iNumber: 0
     property bool iFlag: false
-    property double iRadius: 0.0
-    property double iHeight: 0.0
-    property double iWidth: 0.0
-    property double iA: 0.0
-    property double iB: 0.0
-    property double iC: 0.0
+//    property double iRadius: 0.0
+//    property double iHeight: 0.0
+//    property double iWidth: 0.0
+//    property double iA: 0.0
+//    property double iB: 0.0
+//    property double iC: 0.0
 
     Item {
         id: root
@@ -93,23 +93,29 @@ Window {
                             switch (name)
                             {
                             case "circle":
-                                iRadius = model.data
+//                                iRadius = model.data
+                                addCircle.radius = model.data.radius
                                 addCircle.open()
                                 break
                             case "triangle":
-                                 dataModel.setShapeIndex(1)
-                                iA = model.data
-                                dataModel.setShapeIndex(2)
-                                iB = model.data
-                                dataModel.setShapeIndex(3)
-                                iC = model.data
+//                                 dataModel.setShapeIndex(1)
+//                                iA = model.data
+//                                dataModel.setShapeIndex(2)
+//                                iB = model.data
+//                                dataModel.setShapeIndex(3)
+//                                iC = model.data
+                                addTriangle.rA = model.data.a
+                                addTriangle.rB = model.data.b
+                                addTriangle.rC = model.data.c
                                 addTriangle.open()
                                 break
                             case "rectangle":
-                                dataModel.setShapeIndex(1)
-                                iHeight = model.data
-                                dataModel.setShapeIndex(2)
-                                iWidth = model.data
+//                                dataModel.setShapeIndex(1)
+//                                iHeight = model.data
+//                                dataModel.setShapeIndex(2)
+//                                iWidth = model.data
+                                addRectangle.rWidth = model.data.width
+                                addRectangle.rHeight = model.data.height
                                 addRectangle.open()
                                 break
                             default:
@@ -161,6 +167,7 @@ Window {
                     onClicked: {
                         console.log("Circle")
                         iFlag = false
+                        addCircle.radius = 0.1
                         addCircle.open()
                     }
                 }
@@ -169,6 +176,9 @@ Window {
                     onClicked: {
                         console.log("Triangle")
                         iFlag = false
+                        addTriangle.rA = 0.1
+                        addTriangle.rB = 0.1
+                        addTriangle.rC = 0.1
                         addTriangle.open()
                     }
                 }
@@ -177,6 +187,8 @@ Window {
                     onClicked: {
                         console.log("Rectangle")
                         iFlag = false
+                        addRectangle.rWidth = 0.1
+                        addRectangle.rHeight = 0.1
                         addRectangle.open()
                     }
                 }
@@ -274,10 +286,8 @@ Window {
         width: 300
         height: 200
         anchors.centerIn: parent
-
-        radius: iRadius
+        radius: 0.0
         isEditing: iFlag
-
         onAccepted: {
             console.log("@@@@", addCircle.radius, addCircle.isEditing)
             iFlag ? dataModel.editShape(filler.currentIndex,"circle",
@@ -287,138 +297,46 @@ Window {
         }
     }
 
-    Dialog {
+    AddTriangleDialog {
         id: addTriangle
         width: 300
         height: 200
         anchors.centerIn: parent
-
-        Item {
-            id: addTriangleIt
-            anchors.fill: parent
-
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: -130
-                width: 120
-
-                SpinBox {
-                    id: addTriangleSpinA
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iA
-                }
-            }
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: -45
-                width: 120
-
-                SpinBox {
-                    id: addTriangleSpinB
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iB
-                }
-            }
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: 40
-                width: 120
-
-                SpinBox {
-                    id: addTriangleSpinC
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iC
-                }
-            }
-            Button {
-                id: addTriangleCencel
-                text: "Cencel"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: addTriangle.close()
-            }
-            Button {
-                id: addTriangleOk
-                text: iFlag ? "Edit" : "Create"
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: {
-                    iFlag ? dataModel.editShape(filler.currentIndex,"triangle",
-                                                       addTriangleSpinA.value,
-                                                       addTriangleSpinB.value,
-                                                       addTriangleSpinC.value)
-                                 : dataModel.addTriangle(addTriangleSpinA.value,
-                                                         addTriangleSpinB.value,
-                                                         addTriangleSpinC.value)
-                    filler.currentIndex = aNumber
-                }
-            }
+        rA: 0.0
+        rB: 0.0
+        rC: 0.0
+        isEditing: iFlag
+        onAccepted: {
+            iFlag ? dataModel.editShape(filler.currentIndex,"triangle",
+                                               addTriangle.rA,
+                                               addTriangle.rB,
+                                               addTriangle.rC)
+                         : dataModel.addTriangle(addTriangle.rA,
+                                                 addTriangle.rB,
+                                                 addTriangle.rC)
+            filler.currentIndex = aNumber
         }
     }
-    Dialog {
+
+    AddRectangleDialog {
         id: addRectangle
         width: 300
         height: 200
         anchors.centerIn: parent
 
-        Item {
-            id: addRectangleIt
-            anchors.fill: parent
+        rHeight: 0.0
+        rWidth: 0.0
 
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: -100
-                width: 120
+        isEditing: iFlag
 
-                SpinBox {
-                    id: addRectangleSpinWindth
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iHeight
-                }
-            }
-
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: 0
-                width: 120
-
-                SpinBox {
-                    id: addRectangleSpinHeight
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iWidth
-                }
-            }
-
-            Button {
-                id: addRectangleCencel
-                text: "Cencel"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: addRectangle.close()
-            }
-            Button {
-                id: addRectangleOk
-                text: iFlag ? "Edit" : "Create"
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: {
-                    iFlag ? dataModel.editShape(filler.currentIndex,"rectangle",
-                                                addRectangleSpinWindth.value,
-                                                addRectangleSpinHeight.value)
-                          : dataModel.addRectangle(addRectangleSpinWindth.value,
-                                                   addRectangleSpinHeight.value)
-                    filler.currentIndex = aNumber
-                }
-            }
+        onAccepted: {
+            iFlag ? dataModel.editShape(filler.currentIndex,"rectangle",
+                                        addRectangle.rHeight,
+                                        addRectangle.rWidth)
+                  : dataModel.addRectangle(addRectangle.rHeight,
+                                           addRectangle.rWidth)
+            filler.currentIndex = aNumber
         }
     }
+
 }
