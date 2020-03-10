@@ -10,7 +10,7 @@ T getRandom(T lower, T upper)
     return  lower + static_cast <T> (qrand()) /
             (static_cast <T> (RAND_MAX/(upper-lower)));
 }
-
+static int idert = 0;
 class Shape
 {
 public:
@@ -18,6 +18,7 @@ public:
     {}
     virtual double area() const = 0;
     virtual QString getNumber() const = 0;
+    virtual double getData(int index) const = 0;
     QString getName() const
     {
         return m_name;
@@ -53,6 +54,14 @@ public:
     {
         return "R="+QString::number(m_radius);
     }
+    void setRadius(double r)
+    {
+        m_radius = r;
+    }
+    double getData(int index) const override
+    {
+        return m_radius;
+    }
 private:
     double m_radius;
 };
@@ -73,6 +82,33 @@ public:
         return "A=" + QString::number(m_A) + " B=" + QString::number(m_B) +
                 " C="+QString::number(m_C);
     }
+    void setA(double a)
+    {
+        m_A = a;
+    }
+    void setB(double b)
+    {
+        m_B = b;
+    }
+    void setC(double c)
+    {
+        m_C = c;
+    }
+    double getData(int index) const override
+    {
+        switch(index)
+        {
+        case 1:
+            return m_A;
+        case 2:
+            return m_B;
+        case 3:
+            return m_C;
+        default:
+            return 0;
+        }
+    }
+
 private:
     double m_A = 0;
     double m_B = 0;
@@ -93,7 +129,26 @@ public:
         return "height=" + QString::number(m_height) +
                 " m_width=" + QString::number(m_width);
     }
-
+    void setHeight(double height)
+    {
+        m_height = height;
+    }
+    void setWidth(double width)
+    {
+        m_width = width;
+    }
+    double getData(int index) const override
+    {
+        switch(index)
+        {
+        case 1:
+            return m_height;
+        case 2:
+            return m_width;
+        default:
+            return 0;
+        }
+    }
 private:
     double m_height;
     double m_width;
@@ -134,6 +189,12 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
             return shape->getName();
         }
         break;
+    case ItemDataRole::Data:
+        if (shape)
+        {
+            return shape->getData(idert);
+        }
+        break;
     default:
         break;
     }
@@ -144,9 +205,15 @@ QHash<int, QByteArray> DataModel::roleNames() const
 {
     QHash<int, QByteArray> result = {
         { Qt::DisplayRole, "text" },
-        { ItemDataRole::NameRole, "name" }
+        { ItemDataRole::NameRole, "name" },
+        { ItemDataRole::Data, "data" }
     };
     return result;
+}
+
+void DataModel::setShapeIndex(int index)
+{
+    idert = index;
 }
 
 void DataModel::addCircle(qreal radius)
@@ -203,6 +270,43 @@ void DataModel::delShape(int start, int count)
         }
     }
     endRemoveRows();
+}
+
+void DataModel::editShape(int index, const QString shap, qreal a, qreal b, qreal c)
+{
+
+    auto shape = m_figureList.at(index);
+    if(shap == "circle")
+    {
+        auto circle = shape.staticCast<Circle>();
+        circle->setRadius(a);
+        const auto modelIndex = this->index(index, 0);
+        emit dataChanged(modelIndex, modelIndex, {
+                             Qt::DisplayRole, ItemDataRole::NameRole
+                         });
+    }
+    else if(shap == "rectangle")
+    {
+        auto rectangle = shape.staticCast<Rectangle>();
+        rectangle->setWidth(a);
+        rectangle->setHeight(b);
+        const auto modelIndex = this->index(index, 0);
+        emit dataChanged(modelIndex, modelIndex, {
+                             Qt::DisplayRole, ItemDataRole::NameRole
+                         });
+    }
+    else if(shap == "triangle")
+    {
+        auto triangle = shape.staticCast<Triangle>();
+        triangle->setA(a);
+        triangle->setB(b);
+        triangle->setC(c);
+        const auto modelIndex = this->index(index, 0);
+        emit dataChanged(modelIndex, modelIndex, {
+                             Qt::DisplayRole, ItemDataRole::NameRole
+                         });
+    }
+
 }
 
 void DataModel::generateShape()
