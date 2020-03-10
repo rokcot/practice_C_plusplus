@@ -269,52 +269,24 @@ Window {
         }
     }
 
-    Dialog {
+    AddCircleDialog {
         id: addCircle
         width: 300
         height: 200
         anchors.centerIn: parent
 
-        Item {
-            id: addCircleIt
-            anchors.fill: parent
+        radius: iRadius
+        isEditing: iFlag
 
-            Item {
-                anchors.fill: parent
-                anchors.margins: 0
-                width: 120
-
-                SpinBox {
-                    id: addCircleSpinStart
-                    width: 275
-                    anchors.centerIn: parent
-                    value: iRadius
-                }
-            }
-
-            Button {
-                id: addCircleCencel
-                text: "Cencel"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: addCircle.close()
-            }
-            Button {
-                id: addCircleOk
-                text: iFlag ? "Edit" : "Create"
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: {
-                    iFlag ? dataModel.editShape(filler.currentIndex,"circle",
-                                                       addCircleSpinStart.value)
-                                 : dataModel.addCircle(addCircleSpinStart.value)
-                    filler.currentIndex = aNumber
-                }
-            }
+        onAccepted: {
+            console.log("@@@@", addCircle.radius, addCircle.isEditing)
+            iFlag ? dataModel.editShape(filler.currentIndex,"circle",
+                                               addCircle.radius)
+                         : dataModel.addCircle(addCircle.radius)
+            filler.currentIndex = aNumber
         }
     }
+
     Dialog {
         id: addTriangle
         width: 300
