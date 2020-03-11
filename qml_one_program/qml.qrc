@@ -5,5 +5,6 @@
         <file>DoubleSpinBox.qml</file>
         <file>AddRectangleDialog.qml</file>
         <file>AddTriangleDialog.qml</file>
+        <file>DelShapeDialog.qml</file>
     </qresource>
 </RCC>

@@ -9,15 +9,9 @@ Window {
     width: 520
     height: 600
     title: qsTr("Hello World")
-    property int aNumber: 0
-    property int iNumber: 0
+    property int indexSelectionFirst: 0
+    property int indexSelectionLast: 0
     property bool iFlag: false
-//    property double iRadius: 0.0
-//    property double iHeight: 0.0
-//    property double iWidth: 0.0
-//    property double iA: 0.0
-//    property double iB: 0.0
-//    property double iC: 0.0
 
     Item {
         id: root
@@ -37,14 +31,14 @@ Window {
                 focus: true
                 width: root.width
                 height: 20
-                color: ((index <= filler.currentIndex) && (index >= aNumber)) ||
-                       ((index >= filler.currentIndex) && (index <= aNumber))
+                color: ((index <= filler.currentIndex) && (index >= indexSelectionFirst)) ||
+                       ((index >= filler.currentIndex) && (index <= indexSelectionFirst))
                        ? "#800000" : "black"
 
                 MouseArea {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     anchors.fill: parent
-//                    onPressAndHold:
+//                  onPressAndHold:
                     onClicked: {
                         switch (mouse.button)
                         {
@@ -53,13 +47,13 @@ Window {
                             break;
                         case Qt.LeftButton:
                             if(mouse.modifiers === Qt.ControlModifier){
-                                aNumber = filler.currentIndex
+                                indexSelectionFirst = filler.currentIndex
                             }else{
-                                aNumber = model.index
+                                indexSelectionFirst = model.index
                             }
                             filler.currentIndex = model.index
                             console.log(filler.currentIndex, " - ",
-                                        index, aNumber)
+                                        index, indexSelectionFirst)
                             break;
                         default:
                             break;
@@ -72,13 +66,13 @@ Window {
                     MenuItem {
                         text: "Delete"
                         onClicked: {
-                            if(aNumber > filler.currentIndex){
-                                iNumber = filler.currentIndex
-                                iNumber = (aNumber+1) - iNumber
+                            if(indexSelectionFirst > filler.currentIndex){
+                                indexSelectionLast = filler.currentIndex
+                                indexSelectionLast = (indexSelectionFirst+1) - indexSelectionLast
                                 //dataModel.delShape(filler.currentIndex, iNumber)
-                            }else if(aNumber != filler.currentIndex){
-                                iNumber = filler.currentIndex
-                                iNumber = (iNumber+1) - aNumber
+                            }else if(indexSelectionFirst != filler.currentIndex){
+                                indexSelectionLast = filler.currentIndex
+                                indexSelectionLast = (indexSelectionLast+1) - indexSelectionFirst
                                 //dataModel.delShape(aNumber, iNumber)
                             }else{
                                 //dataModel.delShape(aNumber, 1)
@@ -93,27 +87,16 @@ Window {
                             switch (name)
                             {
                             case "circle":
-//                                iRadius = model.data
                                 addCircle.radius = model.data.radius
                                 addCircle.open()
                                 break
                             case "triangle":
-//                                 dataModel.setShapeIndex(1)
-//                                iA = model.data
-//                                dataModel.setShapeIndex(2)
-//                                iB = model.data
-//                                dataModel.setShapeIndex(3)
-//                                iC = model.data
                                 addTriangle.rA = model.data.a
                                 addTriangle.rB = model.data.b
                                 addTriangle.rC = model.data.c
                                 addTriangle.open()
                                 break
                             case "rectangle":
-//                                dataModel.setShapeIndex(1)
-//                                iHeight = model.data
-//                                dataModel.setShapeIndex(2)
-//                                iWidth = model.data
                                 addRectangle.rWidth = model.data.width
                                 addRectangle.rHeight = model.data.height
                                 addRectangle.open()
@@ -201,15 +184,15 @@ Window {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             onClicked:  {
-                if(aNumber > filler.currentIndex){
-                    iNumber = filler.currentIndex
-                    iNumber = (aNumber+1) - iNumber
-                }else if(aNumber != filler.currentIndex){
-                    iNumber = filler.currentIndex
-                    iNumber = (iNumber+1) - aNumber
+                if(indexSelectionFirst > filler.currentIndex){
+                    indexSelectionLast = filler.currentIndex
+                    indexSelectionLast = (indexSelectionFirst+1) - indexSelectionLast
+                }else if(indexSelectionFirst != filler.currentIndex){
+                    indexSelectionLast = filler.currentIndex
+                    indexSelectionLast = (indexSelectionLast+1) - indexSelectionFirst
                 }
-                console.log("iNumber="+iNumber+" filler="+filler.currentIndex+
-                            "aNumber="+aNumber)
+                console.log("iNumber="+indexSelectionLast+" filler="+filler.currentIndex+
+                            "aNumber="+indexSelectionFirst)
                 delShapeDialog.open();
             }
         }
@@ -225,60 +208,17 @@ Window {
         }
     }
 
-    Dialog {
+    DelShapeDialog {
         id: delShapeDialog
         width: 300
         height: 200
         anchors.centerIn: parent
-
-        Item {
-            id: delIt
-            anchors.fill: parent
-
-            Item {
-                anchors.fill: parent
-                anchors.margins: 0
-                width: 120
-
-                SpinBox {
-                    id: spinStart
-                    width: 275
-                    value: filler.currentIndex >= aNumber
-                           ? aNumber : filler.currentIndex
-                }
-            }
-            Item {
-                anchors.fill: parent
-                anchors.topMargin: 50
-                width: 120
-
-                SpinBox {
-                    id: spinCount
-                    width: 275
-                    value: filler.currentIndex == aNumber
-                           ? 1 : iNumber
-                }
-            }
-
-            Button {
-                id: cencel
-                text: "Cencel"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: delShapeDialog.close()
-            }
-            Button {
-                id: okDelete
-                text: "Delete"
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                width: parent.width/2-1
-                onClicked: {
-                    dataModel.delShape(spinStart.value, spinCount.value)
-                }
-            }
-        }
+        indexFirst: filler.currentIndex >= indexSelectionFirst
+                    ? indexSelectionFirst : filler.currentIndex
+        indexLast: filler.currentIndex == indexSelectionFirst
+                   ? 1 : indexSelectionLast
+        onAccepted: dataModel.delShape(delShapeDialog.indexFirst,
+                                       delShapeDialog.indexLast)
     }
 
     AddCircleDialog {
@@ -290,10 +230,10 @@ Window {
         isEditing: iFlag
         onAccepted: {
             console.log("@@@@", addCircle.radius, addCircle.isEditing)
-            iFlag ? dataModel.editShape(filler.currentIndex,"circle",
+            isEditing ? dataModel.editShape(filler.currentIndex,"circle",
                                                addCircle.radius)
                          : dataModel.addCircle(addCircle.radius)
-            filler.currentIndex = aNumber
+            filler.currentIndex = indexSelectionFirst
         }
     }
 
@@ -307,14 +247,14 @@ Window {
         rC: 0.0
         isEditing: iFlag
         onAccepted: {
-            iFlag ? dataModel.editShape(filler.currentIndex,"triangle",
+            isEditing ? dataModel.editShape(filler.currentIndex,"triangle",
                                                addTriangle.rA,
                                                addTriangle.rB,
                                                addTriangle.rC)
                          : dataModel.addTriangle(addTriangle.rA,
                                                  addTriangle.rB,
                                                  addTriangle.rC)
-            filler.currentIndex = aNumber
+            filler.currentIndex = indexSelectionFirst
         }
     }
 
@@ -330,12 +270,12 @@ Window {
         isEditing: iFlag
 
         onAccepted: {
-            iFlag ? dataModel.editShape(filler.currentIndex,"rectangle",
+            isEditing ? dataModel.editShape(filler.currentIndex,"rectangle",
                                         addRectangle.rHeight,
                                         addRectangle.rWidth)
                   : dataModel.addRectangle(addRectangle.rHeight,
                                            addRectangle.rWidth)
-            filler.currentIndex = aNumber
+            filler.currentIndex = indexSelectionFirst
         }
     }
 
